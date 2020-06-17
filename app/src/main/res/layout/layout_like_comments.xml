@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_likes"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Likes"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:textSize="14dp"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_comments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Comments"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:textSize="14dp"/>
+
+</LinearLayout>
