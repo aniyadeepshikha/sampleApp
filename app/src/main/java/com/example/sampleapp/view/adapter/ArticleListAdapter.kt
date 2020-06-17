@@ -1,7 +1,7 @@
 package com.example.sampleapp.view.adapter
 
 import android.content.Context
-import android.opengl.Visibility
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.sampleapp.R
 import com.example.sampleapp.model.Article
+import com.example.sampleapp.utils.TimeAgo
 import de.hdodenhof.circleimageview.CircleImageView
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ArticleListAdapter(var context : Context, var articleList : List<Article>) : RecyclerView.Adapter<ArticleListAdapter.ArticleListViewHolder>(){
 
@@ -30,9 +34,14 @@ class ArticleListAdapter(var context : Context, var articleList : List<Article>)
         holder.content.text = articleList?.get(position).content?: "--"
         holder.title.text = articleList?.get(position).media?.get(0)?.title?: "--"
         holder.uri.text = articleList?.get(position).media?.get(0)?.url?: "--"
-        holder.likes.text = articleList?.get(position).likes?.toString() + " Likes " ?: "0 Likes"
-        holder.comments.text = articleList?.get(position).comments?.toString() + " Comments " ?: "0 Comments"
+        holder.likes.text =prettyCount(articleList?.get(position).likes) + " Likes"
+        holder.comments.text =prettyCount(articleList?.get(position).comments) + " Comments "
 
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val dateStr = articleList.get(position).createdAt
+        val date: Date = inputFormat.parse(dateStr)
+
+        holder.createdAt.text = TimeAgo.getTimeAgo(date.time)
 
         if(articleList.get(position).media!=null && articleList.get(position).media.get(0).image!=null){
             holder.articleImage.visibility = View.VISIBLE
@@ -52,11 +61,27 @@ class ArticleListAdapter(var context : Context, var articleList : List<Article>)
         val uri : AppCompatTextView = item.findViewById(R.id.tv_uri)
         val likes : AppCompatTextView = item.findViewById(R.id.tv_likes)
         val comments : AppCompatTextView = item.findViewById(R.id.tv_comments)
+        val createdAt : AppCompatTextView = item.findViewById(R.id.tv_post_time)
 
         val articleImage : AppCompatImageView = item.findViewById(R.id.iv_content_image)
         val userImage : CircleImageView = item.findViewById(R.id.profile_image)
 
     }
 
+    fun prettyCount(number: Double): String? {
+        val suffix = charArrayOf(' ', 'k', 'M', 'B', 'T', 'P', 'E')
+        val value = Math.floor(Math.log10(number.toDouble())).toInt()
+        val base = value / 3
+        return if (value >= 3 && base < suffix.size) {
+            DecimalFormat("#0.0").format(
+                number / Math.pow(
+                    10.0,
+                    base * 3.toDouble()
+                )
+            ) + suffix[base]
+        } else {
+            DecimalFormat("#,##0").format(number)
+        }
+    }
 
 }

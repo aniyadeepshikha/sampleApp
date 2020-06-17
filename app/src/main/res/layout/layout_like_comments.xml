@@ -13,6 +13,7 @@
             android:layout_marginTop="5dp"
             android:text="Likes"
             android:textStyle="bold"
+            android:textColor="@android:color/black"
             android:gravity="center_vertical"
             android:textSize="14dp"/>
         <androidx.appcompat.widget.AppCompatTextView
@@ -22,6 +23,7 @@
             android:layout_marginTop="5dp"
             android:text="Comments"
             android:textStyle="bold"
+            android:textColor="@android:color/black"
             android:gravity="center_vertical"
             android:textSize="14dp"/>
 

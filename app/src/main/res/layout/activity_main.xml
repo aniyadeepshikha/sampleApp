@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
+    <include
+        android:id="@+id/progress_bar"
+        android:visibility="gone"
+        layout="@layout/layout_progress_bar"/>
+
 <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/rv_article_list"
     android:layout_width="match_parent"
