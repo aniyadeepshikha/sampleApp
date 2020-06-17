@@ -7,7 +7,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RemoteRepository {
+object RemoteRepository {
 
     fun getArticles(): MutableLiveData<List<Article>> {
         val mutableLiveData = MutableLiveData<List<Article>>()
@@ -19,6 +19,7 @@ class RemoteRepository {
                 }
                 override fun onResponse(call: Call<List<Article>>, response: Response<List<Article>>) {
                     if (response.isSuccessful) {
+                        Log.d("RemoteRepository: ",""+response.toString())
                         mutableLiveData.postValue(response.body())
                     } else {
                         Log.d("Error", "Coudn't get the data")
