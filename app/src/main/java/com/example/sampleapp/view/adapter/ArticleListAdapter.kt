@@ -1,13 +1,13 @@
 package com.example.sampleapp.view.adapter
 
 import android.content.Context
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.sampleapp.R
 import com.example.sampleapp.model.Article
@@ -17,43 +17,72 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ArticleListAdapter(var context : Context, var articleList : List<Article>) : RecyclerView.Adapter<ArticleListAdapter.ArticleListViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleListViewHolder {
+class ArticleListAdapter(var context : Context, var articleList : MutableList<Article>) : RecyclerView.Adapter<ViewHolder>(){
+    private val ITEM = 0
+    private val LOADING = 1
+    private var isLoadingAdded = false
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        when (viewType) {
+            ITEM -> {
+                val view: View = LayoutInflater.from(parent.context).inflate(R.layout.layout_list_item,parent,false)
+                return ArticleListViewHolder(view)
+            }
+            LOADING -> {
+                val v2: View = inflater.inflate(R.layout.layout_progress_bar, parent, false)
+                return LoadingVH(v2)
+            }
+        }
         val view: View = LayoutInflater.from(parent.context).inflate(R.layout.layout_list_item,parent,false)
-        return ArticleListViewHolder(view)
+        return  return ArticleListViewHolder(view)
     }
 
     override fun getItemCount(): Int {
        return articleList.size
     }
-
-    override fun onBindViewHolder(holder: ArticleListViewHolder, position: Int) {
-        holder.userName.text = articleList?.get(position).user?.get(0)?.name?: "--"
-        holder.userDesignation.text = articleList?.get(position).user?.get(0)?.designation?: "--"
-        holder.content.text = articleList?.get(position).content?: "--"
-        holder.title.text = articleList?.get(position).media?.get(0)?.title?: "--"
-        holder.uri.text = articleList?.get(position).media?.get(0)?.url?: "--"
-        holder.likes.text =prettyCount(articleList?.get(position).likes) + " Likes"
-        holder.comments.text =prettyCount(articleList?.get(position).comments) + " Comments "
-
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        val dateStr = articleList.get(position).createdAt
-        val date: Date = inputFormat.parse(dateStr)
-
-        holder.createdAt.text = TimeAgo.getTimeAgo(date.time)
-
-        if(articleList.get(position).media!=null && articleList.get(position).media.get(0).image!=null){
-            holder.articleImage.visibility = View.VISIBLE
-            Glide.with(context).load(articleList.get(position).media.get(0).image).into(holder.articleImage)
-        }else{
-            holder.articleImage.visibility = View.GONE
-        }
-        Glide.with(context).load(articleList.get(position).user.get(0).avatar).into(holder.userImage);
-
+    override fun getItemViewType(position: Int): Int {
+        return if (position == articleList.size - 1 && isLoadingAdded) LOADING else ITEM
     }
 
-    class ArticleListViewHolder(item : View) : RecyclerView.ViewHolder(item){
+    override fun onBindViewHolder(holder1: ViewHolder, position: Int) {
+        val article: Article = articleList.get(position)
+        when (getItemViewType(position)) {
+            ITEM -> {
+                    val holder: ArticleListViewHolder = holder1 as ArticleListViewHolder
+                    holder.userName.text = article.user.get(0).name
+                    holder.userDesignation.text = article.user.get(0).designation
+                    holder.content.text = article.content
+                    if(article.media.size > 0 ) {
+                        holder.title.text = article.media.get(0).title
+                        holder.uri.text = article.media.get(0).url
+                    }
+
+                    holder.likes.text =prettyCount(article.likes) + " Likes"
+                    holder.comments.text =prettyCount(article.comments) + " Comments "
+
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                    val dateStr =article.createdAt
+                    val date: Date = inputFormat.parse(dateStr)
+
+                    holder.createdAt.text = TimeAgo.getTimeAgo(date.time)
+
+                    if(articleList.get(position).media.size > 0){
+                        holder.articleImage.visibility = View.VISIBLE
+                        Glide.with(context).load(articleList.get(position).media.get(0).image).into(holder.articleImage)
+                    }else{
+                        holder.articleImage.visibility = View.GONE
+                    }
+                    Glide.with(context).load(articleList.get(position).user.get(0).avatar).into(holder.userImage);
+            }
+            LOADING -> {
+            }
+        }
+    }
+
+    class ArticleListViewHolder(item : View) : ViewHolder(item){
         val userName : AppCompatTextView = item.findViewById(R.id.tv_user_name)
         val userDesignation : AppCompatTextView = item.findViewById(R.id.tv_user_designation)
         val content : AppCompatTextView = item.findViewById(R.id.tv_content)
@@ -67,6 +96,8 @@ class ArticleListAdapter(var context : Context, var articleList : List<Article>)
         val userImage : CircleImageView = item.findViewById(R.id.profile_image)
 
     }
+
+    class LoadingVH(itemView: View?) : ViewHolder(itemView!!)
 
     fun prettyCount(number: Double): String? {
         val suffix = charArrayOf(' ', 'k', 'M', 'B', 'T', 'P', 'E')
@@ -83,5 +114,34 @@ class ArticleListAdapter(var context : Context, var articleList : List<Article>)
             DecimalFormat("#,##0").format(number)
         }
     }
+
+    fun add(article: Article) {
+        articleList.add(article)
+        notifyItemInserted(articleList.size - 1)
+    }
+
+    fun addAll(articleList: List<Article>) {
+        for (article in articleList) {
+            add(article)
+        }
+    }
+
+    fun addLoadingFooter() {
+        isLoadingAdded = true
+        add(Article())
+    }
+    fun getItem(position: Int): Article? {
+        return articleList.get(position)
+    }
+    fun removeLoadingFooter() {
+        isLoadingAdded = false
+        val position: Int = articleList.size - 1
+        val item: Article? = getItem(position)
+        if (item != null) {
+            articleList.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+
 
 }

@@ -8,10 +8,10 @@ import com.example.sampleapp.network.RemoteRepository
 
 class ArticleVIewModel : ViewModel() {
 
-    var articleList = MutableLiveData<List<Article>>()
+    var articleList = MutableLiveData<MutableList<Article>>()
 
-    fun getArticleList() : LiveData<List<Article>>{
-        articleList = RemoteRepository.getArticles()
+    fun getArticleList(pageIndex : String, limit : String) : LiveData<MutableList<Article>>{
+        articleList = RemoteRepository.getArticles(pageIndex, limit)
         return articleList
     }
 }

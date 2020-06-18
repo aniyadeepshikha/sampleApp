@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">SampleApp</string>
     <string name="article">Articles</string>
+    <string name="please_wait">Please wait ...</string>
 </resources>

@@ -9,15 +9,15 @@ import retrofit2.Response
 
 object RemoteRepository {
 
-    fun getArticles(): MutableLiveData<List<Article>> {
-        val mutableLiveData = MutableLiveData<List<Article>>()
-
-        ApiClient.instance.getArticles()
-            .enqueue(object : Callback<List<Article>> {
-                override fun onFailure(call: Call<List<Article>>, t: Throwable) {
+    fun getArticles(pageIndex : String, limit : String): MutableLiveData<MutableList<Article>> {
+        val mutableLiveData = MutableLiveData<MutableList<Article>>()
+        System.out.println("PAgeIndex: "+pageIndex)
+        ApiClient.instance.getArticles(pageIndex, limit)
+            .enqueue(object : Callback<MutableList<Article>> {
+                override fun onFailure(call: Call<MutableList<Article>>, t: Throwable) {
                     Log.d("Error", "Coudn't get the data")
                 }
-                override fun onResponse(call: Call<List<Article>>, response: Response<List<Article>>) {
+                override fun onResponse(call: Call<MutableList<Article>>, response: Response<MutableList<Article>>) {
                     if (response.isSuccessful) {
                         Log.d("RemoteRepository: ",""+response.toString())
                         mutableLiveData.postValue(response.body())

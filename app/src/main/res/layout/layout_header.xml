@@ -35,7 +35,7 @@
                 android:layout_weight="1"
                 android:gravity="top"
                 android:text="User designation"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 />
         </LinearLayout>
 
